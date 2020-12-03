@@ -1,0 +1,49 @@
+pipeline {
+    agent 'windows'
+    tool 'maven3'
+    stages {
+        stage('Cloning git') {
+            steps {
+                git 'https://github.com/simisag/jenkins-demo/tree/master/MavenProject'
+            }
+        }
+        stage('Build') {
+            steps {
+                
+                echo 'Maven build'
+                sh 'mvn clean install'
+            }
+        }
+        stage('Archive') {
+            steps {
+                echo 'Archiving the artifacts'
+                archiveArtifacts artifacts: 'MavenProject/multi3/target/*.war', followSymlinks: false
+            }
+        }
+        stage('Archive') {
+            steps {
+                echo 'Archiving the artifacts'
+                archiveArtifacts artifacts: 'MavenProject/multi3/target/*.war', followSymlinks: false
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the artifacts'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'https://34.123.81.3:8081')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the artifacts'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'https://34.123.81.3:8081')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
+            }
+        }
+        post {
+            success {
+                emailext body: 'Build was successful and deployed to server', subject: 'Build Success', to: 'simar.saggu@hotmail.com'
+            }
+        }
+
+    }
+    
+}
