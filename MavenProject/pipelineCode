@@ -26,14 +26,46 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the artifacts'
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.123.81.3:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.66.69.183:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
         }   }
+        
+        stage('codecov') {
+            parallel {
+                stage('findbugs') {
+            	    steps {
+            	        git 'https://github.com/simisag/jenkins-demo'
+    	                sh "cd javancss-master ; mvn findbugs:findbugs"
+    	                findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
+  	                }
+	            }
+               stage('Cobertura') {
+  	                steps {
+    	                
+                        sh 'cd MavenProject ;mvn cobertura:cobertura -Dcobertura.report.format=xml'
+  	                }
+	            }
+    
+    
+            }
+        }
+        stage('Genrate Cobertura report') {
+            steps {
+                echo 'Genrate Cobertura report'
+                cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+            }
+        }
+        stage('Cleaning workspace') {
+            steps {
+                echo 'Cleaning the workspace'
+                cleanWs()
+            }
+        }
         
 
     }
     post {
             success {
-                emailext body: 'Build was successful and deployed to server', subject: 'Build Success', to: 'simar.saggu@hotmail.com'
+                emailext body: 'Build was successful and deployed to server', subject: 'Build Success', to: "${email_rec}"
             }
         }
     
