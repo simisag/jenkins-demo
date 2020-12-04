@@ -67,9 +67,13 @@
             </plugin>
 	    <plugin>
     		<groupId>org.codehaus.mojo</groupId>
-        	<artifactId>javancss-maven-plugin</artifactId>
-       		<version>2.1</version>
-
+    		<artifactId>cobertura-maven-plugin</artifactId>
+    		<configuration>
+       		    <formats>
+           		<format>html</format>
+           		<format>xml</format>
+       		    </formats>
+    		</configuration>
 	    </plugin>
 		
         </plugins>
