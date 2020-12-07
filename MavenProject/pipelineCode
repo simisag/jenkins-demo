@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the artifacts'
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://34.66.69.183:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://104.197.34.244:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
         }   }
         
         stage('codecov') {
@@ -65,7 +65,8 @@ pipeline {
     }
     post {
             success {
-                emailext body: 'Build was successful and deployed to server', subject: 'Build Success', to: "${email_rec}"
+                
+                emailext body: 'BUILT SUCCESSFULLY', compressLog: true, replyTo: 'supt26680@gmail.com', subject: '$BUILD_NUMBER:Pipeline Build Status ', to: '${email_rec}'
             }
         }
     
