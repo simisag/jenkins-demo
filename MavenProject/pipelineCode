@@ -23,11 +23,7 @@ pipeline {
         }
         
        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the artifacts'
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://104.197.34.244:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
-        }   }
+        
         
         stage('codecov') {
             parallel {
@@ -48,6 +44,11 @@ pipeline {
     
             }
         }
+	stage('Deploy') {
+            steps {
+                echo 'Deploying the artifacts'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://104.197.34.244:8081/')], contextPath: null, onFailure: false, war: 'MavenProject/multi3/target/*.war'
+        }   }
         stage('Genrate Cobertura report') {
             steps {
                 echo 'Genrate Cobertura report'
